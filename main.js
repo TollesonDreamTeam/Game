@@ -12,17 +12,16 @@ var enemy;
 var clickme;
 
 function preload() {
-    this.game.load.tilemap('level', 'TileMaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
-    this.game.load.image('textures', 'sprites/tilemap.png');
-    this.game.load.spritesheet('ss', 'sprites/tilemap.png', 32, 32);
-    this.game.load.image('button', 'sprites/phaser-dude.png');
+    this.game.load.tilemap('level1', 'TileMaps/tm1.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('textures', 'sprites/tm2.png');
+    this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
 function create() {
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
-    map = this.game.add.tilemap('level');
-    map.setCollisionByExclusion([3, 4, 5, 6, 7, 10, 11, 12, 13, 22, 23, 24, 25, 26 ]);
+    map = this.game.add.tilemap('level1');
+    map.setCollisionByExclusion([22]);
     map.addTilesetImage('tilemap', 'textures');  
     layer = map.createLayer('Tile Layer 1');
     layer.resizeWorld();
