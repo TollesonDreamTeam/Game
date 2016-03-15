@@ -1,23 +1,13 @@
-var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var testState = function(game){
+};
 
-var map;
-var layer;
-var sprite;
-var cursors;
-
-var enemyID;
-var enemySprite;
-var enemyStats;
-var enemy;
-var clickme;
-
-function preload() {
+testState.prototype.preload = function() {
     this.game.load.tilemap('Level', 'TileMaps/TestLevel.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('Textures', 'sprites/PlatformerTiles.png');
     this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
-function create() {
+testState.prototype.create = function() {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
     this.map = this.game.add.tilemap('Level');
@@ -34,35 +24,107 @@ function create() {
     this.groundLayer.resizeWorld();
    
     this.sprite.body.bounce.y = 0.2;
-    this.sprite.body.gravity.y = 300;
-    
-    
+    this.sprite.body.gravity.y = 2600;
     
     this.game.camera.follow(this.sprite);
     
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.jumping = false;
+     
+    this.game.input.keyboard.addKeyCapture([
+        Phaser.Keyboard.LEFT,
+        Phaser.Keyboard.RIGHT,
+        Phaser.Keyboard.UP,
+        Phaser.Keyboard.DOWN
+    ]);
 }
 
 //one sec fam
 
-function update() {
+testState.prototype.update = function() {
+    // Collide the player with the ground
     this.game.physics.arcade.collide(this.sprite, this.groundLayer);
-    this.sprite.body.velocity.x = 0;
-      if (this.cursors.left.isDown) {
-        //  Move to the left
-        this.sprite.body.velocity.x = -150;
 
-       
+    if (this.leftInputIsActive()) {
+        // If the LEFT key is down, set the player velocity to move left
+        this.sprite.body.velocity.x = -300;
+    } else if (this.rightInputIsActive()) {
+        // If the RIGHT key is down, set the player velocity to move right
+        this.sprite.body.velocity.x = 300;
+    } else {
+        this.sprite.body.velocity.x = 0;
     }
-    else if (this.cursors.right.isDown) {
-        //  Move to the right
-        this.sprite.body.velocity.x = 150;
 
-      
+    // Set a variable that is true when the player is touching the ground
+    var onTheGround = this.sprite.body.blocked.down;
+
+    // If the player is touching the ground, let him have 2 jumps
+    if (onTheGround) {
+        this.jumps = 2;
+        this.jumping = false;
     }
-    //  Allow the player to jump
-    // Don't know how the blank to get .touching.down to work
-    if (this.cursors.up.isDown) {
-        this.sprite.body.velocity.y = 800;
+
+    // Jump! Keep y velocity constant while the jump button is held for up to 150 ms
+    if (this.jumps > 0 && this.upInputIsActive(150)) {
+        this.sprite.body.velocity.y = -300;
+        this.jumping = true;
     }
-}
+
+    // Reduce the number of available jumps if the jump input is released
+    if (this.jumping && this.upInputReleased()) {
+        this.jumps--;
+        this.jumping = false;
+    }
+};
+
+// This function should return true when the player activates the "go left" control
+// In this case, either holding the right arrow or tapping or clicking on the left
+// side of the screen.
+testState.prototype.leftInputIsActive = function() {
+    var isActive = false;
+
+    isActive = this.input.keyboard.isDown(Phaser.Keyboard.LEFT);
+    isActive |= (this.game.input.activePointer.isDown &&
+        this.game.input.activePointer.x < this.game.width/4);
+
+    return isActive;
+};
+
+// This function should return true when the player activates the "go right" control
+// In this case, either holding the right arrow or tapping or clicking on the right
+// side of the screen.
+testState.prototype.rightInputIsActive = function() {
+    var isActive = false;
+
+    isActive = this.input.keyboard.isDown(Phaser.Keyboard.RIGHT);
+    isActive |= (this.game.input.activePointer.isDown &&
+        this.game.input.activePointer.x > this.game.width/2 + this.game.width/4);
+
+    return isActive;
+};
+
+// This function should return true when the player activates the "jump" control
+// In this case, either holding the up arrow or tapping or clicking on the center
+// part of the screen.
+testState.prototype.upInputIsActive = function(duration) {
+    var isActive = false;
+
+    isActive = this.input.keyboard.downDuration(Phaser.Keyboard.UP, duration);
+    isActive |= (this.game.input.activePointer.justPressed(duration + 1000/60) &&
+        this.game.input.activePointer.x > this.game.width/4 &&
+        this.game.input.activePointer.x < this.game.width/2 + this.game.width/4);
+
+    return isActive;
+};
+
+// This function returns true when the player releases the "jump" control
+testState.prototype.upInputReleased = function() {
+    var released = false;
+
+    released = this.input.keyboard.upDuration(Phaser.Keyboard.UP);
+    released |= this.game.input.activePointer.justReleased();
+
+    return released;
+};
+
+var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '');
+game.state.add('game', testState, true);
