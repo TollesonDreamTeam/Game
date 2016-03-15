@@ -12,44 +12,43 @@ var enemy;
 var clickme;
 
 function preload() {
-    this.game.load.tilemap('level1', 'TileMaps/tm1.json', null, Phaser.Tilemap.TILED_JSON);
-    this.game.load.image('textures', 'sprites/tm2.png');
+    this.game.load.tilemap('Level', 'TileMaps/TestLevel.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('Textures', 'sprites/PlatformerTiles.png');
     this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
 function create() {
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
-
-    map = this.game.add.tilemap('level1');
-    map.setCollisionByExclusion([22]);
-    map.addTilesetImage('tilemap', 'textures');  
-    layer = map.createLayer('Tile Layer 1');
-    layer.resizeWorld();
-            
-    sprite = this.game.add.sprite(200, 200, 'ss');
-    this.game.physics.p2.enable(sprite);sprite.frame = 32;           
-    sprite.collideWorldBounds = true;
-    this.game.physics.p2.convertTilemap(map, layer);
-    this.game.camera.follow(sprite);
-    this.game.physics.p2.setBoundsToWorld(true, true, true, true, false);
-
-    cursors = this.game.input.keyboard.createCursorKeys();
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    
+    this.map = this.game.add.tilemap('Level');
+    this.map.addTilesetImage('PlatformerTiles', 'Textures');
+    
+    this.backgroundLayer = this.map.createLayer('BackgroundLayer');
+    this.groundLayer = this.map.createLayer('GroundLayer');
+    
+    this.map.setCollisionBetween(0, 24, true, 'GroundLayer');
+    
+    this.sprite = this.game.add.sprite(0, 750, 'ss');
+    this.game.physics.arcade.enable(this.sprite);
+    
+    this.groundLayer.resizeWorld();
+    
+    this.sprite.body.bounce.y = 0.2;
+    this.sprite.body.gravity.y = 2000;
+    this.sprite.body.gravity.x = 20;
+    this.sprite.body.velocity.x = 100;
+    
+    this.game.camera.follow(this.sprite);
+    
+    this.cursors = this.game.input.keyboard.createCursorKeys();
 }
 
+//one sec fam
+
 function update() {
-    sprite.body.setZeroVelocity();
-
-    if (cursors.left.isDown) {
-        sprite.body.moveLeft(400);
-    }
-    else if (cursors.right.isDown) {
-        sprite.body.moveRight(400);
-    }
-
-    if (cursors.up.isDown) {
-        sprite.body.moveUp(400);
-    }
-    else if (cursors.down.isDown) {
-        sprite.body.moveDown(400);
+    this.game.physics.arcade.collide(this.sprite, this.groundLayer);
+    
+    if (this.cursors.up.isDown) {
+        this.sprite.body.velocity.y = -500;
     }
 }
