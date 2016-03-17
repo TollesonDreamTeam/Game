@@ -17,7 +17,7 @@ function preload() {
     this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
-function create() {
+function create() {    
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
     this.map = this.game.add.tilemap('Level');
@@ -32,7 +32,7 @@ function create() {
     this.game.physics.arcade.enable(this.sprite);
     
     this.groundLayer.resizeWorld();
-   
+    this.game.world.setBounds(0, 0, 800, 600);
     this.sprite.body.bounce.y = 0.2;
     this.sprite.body.gravity.y = 300;
     
@@ -63,6 +63,6 @@ function update() {
     //  Allow the player to jump
     // Don't know how the blank to get .touching.down to work
     if (this.cursors.up.isDown) {
-        this.sprite.body.velocity.y = 800;
+        this.sprite.body.velocity.y = -350;
     }
 }
