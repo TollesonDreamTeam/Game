@@ -7,15 +7,8 @@ testState.prototype.preload = function() {
     this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
-<<<<<<< HEAD
-function create() {    
-=======
 testState.prototype.create = function() {
-<<<<<<< HEAD
     game.camera.deadzone = new Phaser.Rectangle(window.innerWidth, window.innerHeight, 100*32, 10*32);
-=======
->>>>>>> origin/master
->>>>>>> origin/master
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
     this.map = this.game.add.tilemap('Level');
@@ -31,7 +24,7 @@ testState.prototype.create = function() {
     this.sprite.body.collideWorldBounds = true;
     
     this.groundLayer.resizeWorld();
-    this.game.world.setBounds(0, 0, 800, 600);
+   
     this.sprite.body.bounce.y = 0.2;
     this.sprite.body.gravity.y = 2600;
     
@@ -76,18 +69,11 @@ testState.prototype.update = function() {
         this.jumps = 2;
         this.jumping = false;
     }
-<<<<<<< HEAD
-    //  Allow the player to jump
-    // Don't know how the blank to get .touching.down to work
-    if (this.cursors.up.isDown) {
-        this.sprite.body.velocity.y = -350;
-=======
 
     // Jump! Keep y velocity constant while the jump button is held for up to 150 ms
     if (this.jumps > 0 && this.upInputIsActive(150)) {
         this.sprite.body.velocity.y = -300;
         this.jumping = true;
->>>>>>> origin/master
     }
 
     // Reduce the number of available jumps if the jump input is released
