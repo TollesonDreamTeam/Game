@@ -2,24 +2,33 @@ var testState = function(game){
 };
 
 testState.prototype.preload = function() {
-    this.game.load.tilemap('Level', 'TileMaps/TestLevel2.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.tilemap('Level', 'TileMaps/TestLevel5.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('Textures', 'sprites/PlatformerTiles.png');
-    this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
+    this.game.load.spritesheet('ss', 'sprites/chickens.png', 32, 32);
 }
 
 testState.prototype.create = function() {
     game.camera.deadzone = new Phaser.Rectangle(window.innerWidth, window.innerHeight, 100*32, 10*32);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
+    this.flipped = false;
+    
     this.map = this.game.add.tilemap('Level');
     this.map.addTilesetImage('PlatformerTiles', 'Textures');
     
     this.backgroundLayer = this.map.createLayer('BackgroundLayer');
     this.groundLayer = this.map.createLayer('GroundLayer');
+    this.flagLayer = this.map.createLayer('FlagLayer');
     
     this.map.setCollisionBetween(0, 24, true, 'GroundLayer');
+    this.map.setTileIndexCallback(6, function() {
+        console.log("nice ron!");
+    }, this, this.flagLayer);
     
     this.sprite = this.game.add.sprite(0, 750, 'ss');
+    this.sprite.frame = 1;
+    this.sprite.anchor.setTo(.5, 1);
+    
     this.game.physics.arcade.enable(this.sprite);
     this.sprite.body.collideWorldBounds = true;
     
@@ -47,18 +56,26 @@ testState.prototype.create = function() {
 testState.prototype.update = function() {
     // Collide the player with the ground
     
-    console.log(this.sprite.body.position.y);
-    
     this.game.physics.arcade.collide(this.sprite, this.groundLayer);
 
     if (this.leftInputIsActive()) {
         // If the LEFT key is down, set the player velocity to move left
-            this.sprite.body.velocity.x = -300;
+        this.sprite.body.velocity.x = -300;
+        this.flipped = true;
     } else if (this.rightInputIsActive()) {
         // If the RIGHT key is down, set the player velocity to move right
         this.sprite.body.velocity.x = 300;
+        this.flipped = false;
     } else {
         this.sprite.body.velocity.x = 0;
+    }
+    
+    console.log(this.flipped);
+    
+    if(this.flipped == true){
+        this.sprite.scale.x = -1;
+    } else {
+        this.sprite.scale.x = 1;
     }
 
     // Set a variable that is true when the player is touching the ground
