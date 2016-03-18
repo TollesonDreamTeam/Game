@@ -21,9 +21,8 @@ testState.prototype.create = function() {
     this.flagLayer = this.map.createLayer('FlagLayer');
     
     this.map.setCollisionBetween(0, 24, true, 'GroundLayer');
-    this.map.setTileIndexCallback(6, function() {
-        console.log("nice ron!");
-    }, this, this.flagLayer);
+    
+    this.map.setTileIndexCallback(12, console.log("nice ron!"), this, this.flagLayer);
     
     this.sprite = this.game.add.sprite(0, 750, 'ss');
     this.sprite.frame = 1;
@@ -69,8 +68,6 @@ testState.prototype.update = function() {
     } else {
         this.sprite.body.velocity.x = 0;
     }
-    
-    console.log(this.flipped);
     
     if(this.flipped == true){
         this.sprite.scale.x = -1;
