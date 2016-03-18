@@ -2,12 +2,13 @@ var testState = function(game){
 };
 
 testState.prototype.preload = function() {
-    this.game.load.tilemap('Level', 'TileMaps/TestLevel.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.tilemap('Level', 'TileMaps/TestLevel2.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('Textures', 'sprites/PlatformerTiles.png');
     this.game.load.spritesheet('ss', 'sprites/tm2.png', 32, 32);
 }
 
 testState.prototype.create = function() {
+    game.camera.deadzone = new Phaser.Rectangle(window.innerWidth, window.innerHeight, 100*32, 10*32);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
     this.map = this.game.add.tilemap('Level');
@@ -20,6 +21,7 @@ testState.prototype.create = function() {
     
     this.sprite = this.game.add.sprite(0, 750, 'ss');
     this.game.physics.arcade.enable(this.sprite);
+    this.sprite.body.collideWorldBounds = true;
     
     this.groundLayer.resizeWorld();
    
@@ -29,6 +31,8 @@ testState.prototype.create = function() {
     this.game.camera.follow(this.sprite);
     
     this.jumping = false;
+    
+    this.game.physics.setBoundsToWorld();
      
     this.game.input.keyboard.addKeyCapture([
         Phaser.Keyboard.LEFT,
@@ -42,11 +46,14 @@ testState.prototype.create = function() {
 
 testState.prototype.update = function() {
     // Collide the player with the ground
+    
+    console.log(this.sprite.body.position.y);
+    
     this.game.physics.arcade.collide(this.sprite, this.groundLayer);
 
     if (this.leftInputIsActive()) {
         // If the LEFT key is down, set the player velocity to move left
-        this.sprite.body.velocity.x = -300;
+            this.sprite.body.velocity.x = -300;
     } else if (this.rightInputIsActive()) {
         // If the RIGHT key is down, set the player velocity to move right
         this.sprite.body.velocity.x = 300;
@@ -73,6 +80,10 @@ testState.prototype.update = function() {
     if (this.jumping && this.upInputReleased()) {
         this.jumps--;
         this.jumping = false;
+    }
+    
+    if(this.sprite.body.position.y == 928){
+        game.state.start('game');
     }
 };
 

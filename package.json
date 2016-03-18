@@ -1,0 +1,17 @@
+{
+  "main": "index.html",
+  "name": "FBLA Game",
+  "description": "Tolleson Union FBLA 2016 Game and Simulation Submission",
+  "version": "0.1.0",
+  "keywords": [ "demo", "node-webkit" ],
+  "window": {
+    "title": "FBLA Game",
+    "icon": "link.png",
+    "toolbar": true,
+    "frame": true,
+    "fullscreen": true
+  },
+  "webkit": {
+    "plugin": true
+  }
+}
